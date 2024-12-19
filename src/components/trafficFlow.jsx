@@ -151,12 +151,12 @@ class TrafficFlow extends React.Component {
   }
 
   beginSampleData () {
-    this.traffic = { nodes: [], connections: [] };
-    request.get('sample_data.json')
+    console.log("called")
+    request.get('sample_data.json')  //localhost:8080/sample_data.json
       .set('Accept', 'application/json')
       .end((err, res) => {
         if (res && res.status === 200) {
-          this.traffic.clientUpdateTime = Date.now();
+          console.log(res.body)
           this.updateData(res.body);
         }
       });
@@ -165,6 +165,8 @@ class TrafficFlow extends React.Component {
   componentDidMount () {
     this.checkInitialRoute();
     this.beginSampleData();
+    
+    this.intervalId = setInterval( () => { this.beginSampleData(); }, 1000);
 
     // Listen for changes to the stores
     filterStore.addChangeListener(this.filtersChanged);
@@ -172,6 +174,7 @@ class TrafficFlow extends React.Component {
 
   componentWillUnmount () {
     filterStore.removeChangeListener(this.filtersChanged);
+    clearInterval(this.intervalId);
   }
 
   shouldComponentUpdate (nextProps, nextState) {
